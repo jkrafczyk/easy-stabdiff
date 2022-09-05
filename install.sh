@@ -22,11 +22,26 @@ if [[ ! -d /usr/include/openssl ]]; then
         echo "Trying to install. You may be asked for your password."
         set -x
         sudo apt-get update
-        sudo apt-get install -y libssl-dev
+        sudo apt-get install libssl-dev build-essential
         set +x
     else
         echo "Openssl dev libraries not installed and this is not a debian system."
         echo "Please manually install the corresponding package and try again."
+        exit 1
+    fi
+fi
+
+if ! which autoconf >& /dev/null || ! which gcc  >& /dev/null  || ! which make  >& /dev/null ; then
+    if which apt-get >& /dev/null; then
+        echo "Some autoconf, gcc or make not found."
+        echo "Trying to install. You may be asked for your password."
+        set -x
+        sudo apt-get update
+        sudo apt-get install build-essential
+        set +x
+    else
+        echo "Some autoconf, gcc or make not found."
+        echo "Please manually install the corresponding packages and try again."
         exit 1
     fi
 fi
