@@ -1,0 +1,7 @@
+*.jpg
+*.png
+env
+Python-3.9.12
+python3.9
+*.tar.xz
+/stable_diffusion
