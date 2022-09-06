@@ -3,7 +3,7 @@ set -euo pipefail
 
 HERE="$(dirname "$0")"
 cd "$HERE"
-if echo "$HERE" | grep -v '^/'; then
+if echo "$HERE" | grep -qv '^/'; then
     HERE="$(pwd)/$HERE"
 fi
 
@@ -16,35 +16,61 @@ if [[ "$(uname --machine)" != "x86_64" ]]; then
     exit 1
 fi
 
-if [[ ! -d /usr/include/openssl || ! -f /usr/include/zlib.h || ! -f /usr/include/ffi.h ]]; then
+
+required_files=(
+    /usr/include/openssl/conf.h
+    /usr/include/zlib.h
+    /usr/include/x86_64-linux-gnu/ffi.h
+    /usr/lib/tkConfig.sh
+    /usr/lib/tclConfig.sh
+    /usr/include/bzlib.h
+    /usr/include/sqlite3.h
+    /usr/bin/g++
+    /usr/bin/gcc
+    /usr/bin/make
+    /usr/bin/curl
+    /usr/bin/git
+)
+
+declare -A debian_packages
+debian_packages[/usr/include/openssl/conf.h]="libssl-dev"
+debian_packages[/usr/include/zlib.h]="zlib1g-dev"
+debian_packages[/usr/include/x86_64-linux-gnu/ffi.h]="libffi-dev"
+debian_packages[/usr/lib/tkConfig.sh]="tk-dev"
+debian_packages[/usr/lib/tclConfig.sh]="tcl-dev"
+debian_packages[/usr/include/bzlib.h]="libbz2-dev"
+debian_packages[/usr/include/sqlite3.h]="libsqlite3-dev"
+debian_packages[/usr/bin/g++]="g++ build-essential"
+debian_packages[/usr/bin/gcc]="gcc build-essential"
+debian_packages[/usr/bin/make]="build-essential"
+debian_packages[/usr/bin/curl]="curl"
+debian_packages[/usr/bin/git]="git"
+
+
+missing_files=( )
+for filename in "${required_files[@]}"; do
+    if [[ ! -f "${filename}" ]]; then
+        missing_files+=( "${filename}")
+    fi
+done
+
+if [[ "${#missing_files[@]}" -gt 0 ]]; then 
+    echo "Expected files not found: ${missing_files[@]}"
     if which apt-get >& /dev/null; then
-        echo "Openssl development headers not found."
-        echo "Trying to install. You may be asked for your password."
-        set -x
-        sudo apt-get update
-        sudo apt-get install libsqlite3-dev libssl-dev zlib1g-dev libffi-dev  tk-dev tcl-dev libbz2-dev build-essential autoconf gcc g++
-        set +x
+        packages=( )
+        for filename in "${missing_files[@]}"; do
+            packages+=( ${debian_packages[$filename]} )
+        done
+        echo "Will attempt to install the following packages as a fix:"
+        echo "${packages[@]}"
+        sudo apt-get update && sudo apt-get install ${packages[@]}
     else
-        echo "Openssl dev libraries not installed and this is not a debian system."
-        echo "Please manually install the corresponding package and try again."
+        echo "Can't install packages on non-debian systems yet."
+        echo "Please install the corresponding packages manually and continue."
         exit 1
     fi
 fi
 
-if ! which autoconf >& /dev/null || ! which gcc  >& /dev/null  || ! which make  >& /dev/null ; then
-    if which apt-get >& /dev/null; then
-        echo "Some autoconf, gcc or make not found."
-        echo "Trying to install. You may be asked for your password."
-        set -x
-        sudo apt-get update
-        sudo apt-get install libsqlite3-dev libssl-dev zlib1g-dev libffi-dev  tk-dev tcl-dev libbz2-dev build-essential autoconf gcc g++
-        set +x
-    else
-        echo "Some autoconf, gcc or make not found."
-        echo "Please manually install the corresponding packages and try again."
-        exit 1
-    fi
-fi
 
 echo "Ensuring python3.9 is installed locally..."
 if [[ ! -f "Python-3.9.12.tar.xz" ]]; then
