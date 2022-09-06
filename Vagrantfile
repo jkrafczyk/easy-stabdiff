@@ -1,26 +1,38 @@
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
-
 Vagrant.configure("2") do |config|
-  config.vm.box = "ubuntu/focal64"
-  #config.vm.box = "ubuntu/jammy64"
-
-
-
-  # Share an additional folder to the guest VM. The first argument is
-  # the path on the host to the actual folder. The second argument is
-  # the path on the guest to mount the folder. And the optional third
-  # argument is a set of non-required options.
-  # config.vm.synced_folder "../data", "/vagrant_data"
-  config.vm.synced_folder "./", "/data"
-
-
+    config.vm.provision "shell", inline: """
+        cp /host/install.sh ~vagrant/
+        chown vagrant ~vagrant/install.sh
+        export DEBIAN_FRONTEND=noninteractive
+        yes | sudo -u vagrant ~vagrant/install.sh
+    """
+   
+    config.vm.synced_folder "./", "/host"
   
-  config.vm.provider "virtualbox" do |vb|
-    # Display the VirtualBox GUI when booting the machine
-    vb.gui = false
-  
-    # Customize the amount of memory on the VM:
-    vb.memory = "16384"
+    config.vm.provider "virtualbox" do |vb|
+      vb.memory = "4096"
+    end
+
+    config.vm.define "jammy", autostart: false  do |jammy|
+        jammy.vm.box = "ubuntu/jammy64"
+    end
+
+    config.vm.define "focal", autostart: false  do |focal|
+        focal.vm.box = "ubuntu/focal64"
+    end
+
+    config.vm.define "bullseye", autostart: false  do |bullseye|
+        bullseye.vm.box = "debian/bullseye64"
+    end
+
+    config.vm.define "centos8", autostart: false  do |centos8|
+        centos8.vm.box = "generic/centos8"
+    end
+
+    config.vm.define "playground", autostart: false do |playground|
+        playground.vm.box = "ubuntu/jammy64"
+        playground.vm.provider "virtualbox" do |vb|
+            vb.memory = "16384"
+        end
+    end
+
   end
-end
