@@ -8,13 +8,13 @@ if [[ $# -lt 3 ]]; then
     cat <<EOF
 $0 - Perform image inpainting with stable diffusion
 
-Usage: $0 image-basename attempt-index prompt [addition args to diffuse.sh]
+Usage: $0 image-basename attempt-name prompt [addition args to diffuse.sh]
 
 Examples:
 Inpaint 'input/foo.jpg' with the mask 'input/foo-mask.png', mark as attempt 2,
 use the prompt "Awesome astronaut in space", and only run for 10 inference steps:
 
-$0 foo 2 "Awesome astronaut in space" --num-inference-steps 10
+$0 connery my-first-inpainting "An awesome old astronaut in space" --num-inference-steps 64 --strenght 0.9
 EOF
     exit 1
 fi
@@ -60,7 +60,7 @@ fi
 
 $HERE/diffuse.sh \
     --init-image "$OUTPUT_A" \
-    --strength 0.15 \
-    --num-inference-steps 100 \
+    --strength 0.10 \
+    --num-inference-steps 150 \
     --output "$OUTPUT_B" \
     --prompt "$PROMPT"

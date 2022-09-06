@@ -2,7 +2,7 @@
 set -euo pipefail
 
 HERE="$(dirname "$0")"
-if echo "$HERE" | grep -v '^/'; then
+if echo "$HERE" | grep -qv '^/'; then
     HERE="$(pwd)/$HERE"
 fi
 source "$HERE/env/bin/activate"
