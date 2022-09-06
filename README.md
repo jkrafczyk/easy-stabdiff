@@ -44,9 +44,9 @@ This will:
 
 * Take image and mask with the basename "connery" (input/connery.jpg and input/connery-mask.png)
 * Combine them with the specified prompt
-* write the result to the file "output/connery-my-first-inpainting-a.jpg"
+* write the result to the file "output/connery-my-first-inpainting-a.png"
 * Perform a few additional inference steps _without_ the mask to clean up possible edges
-* write the results of that operation to "output/connery-my-first-inpainting-b.jpg"
+* write the results of that operation to "output/connery-my-first-inpainting-b.png"
 
 Especially common parameters are, in addition to those used in the Text to Image scenario:
 
@@ -57,4 +57,14 @@ Especially common parameters are, in addition to those used in the Text to Image
 
 Takes a rough sketch and a prompt, and generates a new, detailed image from those.
 
-TODO
+Use `./image-to-image.sh image-basename unique-id prompt [additional diffuse.sh arguments]`.
+
+```shell
+./image-to-image.sh connery beardman "Sean connery with a large, bushy beard."  
+```
+
+This will:
+
+* Take image and basename "connery" (input/connery.jpg or input/connery.png)
+* Combine it with the prompt
+* write the result to the file "output/connery-beardman.png"
