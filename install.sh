@@ -16,13 +16,13 @@ if [[ "$(uname --machine)" != "x86_64" ]]; then
     exit 1
 fi
 
-if [[ ! -d /usr/include/openssl ]]; then
+if [[ ! -d /usr/include/openssl || ! -f /usr/include/zlib.h || ! -f /usr/include/ffi.h ]]; then
     if which apt-get >& /dev/null; then
         echo "Openssl development headers not found."
         echo "Trying to install. You may be asked for your password."
         set -x
         sudo apt-get update
-        sudo apt-get install libssl-dev build-essential
+        sudo apt-get install libsqlite3-dev libssl-dev zlib1g-dev libffi-dev  tk-dev tcl-dev libbz2-dev build-essential autoconf gcc g++
         set +x
     else
         echo "Openssl dev libraries not installed and this is not a debian system."
@@ -37,7 +37,7 @@ if ! which autoconf >& /dev/null || ! which gcc  >& /dev/null  || ! which make  
         echo "Trying to install. You may be asked for your password."
         set -x
         sudo apt-get update
-        sudo apt-get install build-essential
+        sudo apt-get install libsqlite3-dev libssl-dev zlib1g-dev libffi-dev  tk-dev tcl-dev libbz2-dev build-essential autoconf gcc g++
         set +x
     else
         echo "Some autoconf, gcc or make not found."
@@ -56,7 +56,8 @@ fi
 
 if [[ ! -x "python3.9/bin/python3.9" ]]; then
     pushd Python-3.9.12
-    ./configure --enable-optimizations --prefix="$HERE/python3.9"
+    ./configure  --prefix="$HERE/python3.9"
+    #./configure --enable-optimizations --prefix="$HERE/python3.9"
     make -j
     make install
     popd
