@@ -11,8 +11,9 @@ $0 - Perform image inpainting with stable diffusion
 Usage: $0 image-basename attempt-name prompt [addition args to diffuse.sh]
 
 Examples:
-Inpaint 'input/foo.jpg' with the mask 'input/foo-mask.png', mark as attempt 2,
-use the prompt "Awesome astronaut in space", and only run for 10 inference steps:
+Inpaint 'input/connery.jpg' with the mask 'input/connery-mask.png',
+Mark output filenames with the attempt name "my-first-inpainting",
+use the prompt "Awesome astronaut in space", and run for 64 inference steps:
 
 $0 connery my-first-inpainting "An awesome old astronaut in space" --num-inference-steps 64 --strenght 0.9
 EOF
@@ -23,7 +24,6 @@ NAME=$1
 ATTEMPT=${2:-0}
 PROMPT=$3
 shift 3
-
 
 INPUT="input/$NAME.jpg"
 MASK="input/$NAME-mask.png"
